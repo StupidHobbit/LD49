@@ -3,7 +3,7 @@
 #include "LD49Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
+#include "LD49/Components/PlatformColor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -110,15 +110,32 @@ void ALD49Character::MoveRight(float Value)
 	}
 }
 
+void ALD49Character::BeginPlay()
+{
+	Super::BeginPlay();
+	this->TurnColor();
+}
+
+
 void ALD49Character::TurnColor()
 {
+	if (this->ColorsToPickFrom.Num() == 0) {
+		return;
+	}
+	if (this->CurrrentColor != nullptr) {
+		delete this->CurrrentColor;
+	}
 	if (this->NextColor == nullptr) {
 		this->CurrrentColor = this->PickColor();
+	}
+	else {
+		this->CurrrentColor = this->NextColor;
 	}
 	this->NextColor = this->PickColor();
 }
 
-UColorPlatform* ALD49Character::PickColor()
+
+UPlatformColor* ALD49Character::PickColor()
 {
-	return this->ColorsToPickFrom[FMath::RandRange(0, this->ColorsToPickFrom.Num() - 1)];
+	return this->ColorsToPickFrom[FMath::RandRange(0, this->ColorsToPickFrom.Num() - 1)].GetDefaultObject();
 }

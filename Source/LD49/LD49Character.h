@@ -7,7 +7,8 @@
 #include "LD49Character.generated.h"
 
 
-class UColorPlatform;
+class UPlatformColor;
+struct FTimerHandle;
 
 UCLASS(config = Game)
 class ALD49Character : public ACharacter
@@ -22,14 +23,16 @@ class ALD49Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	UPROPERTY(BlueprintReadOnly, Category = Color, meta = (AllowPrivateAccess = "true"))
-	class UColorPlatform* CurrrentColor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
+	UPlatformColor* CurrrentColor;
 
-	UPROPERTY(BlueprintReadOnly, Category = Color, meta = (AllowPrivateAccess = "true"))
-	class UColorPlatform* NextColor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
+	UPlatformColor* NextColor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Color, meta = (AllowPrivateAccess = "true"))
-	TArray<UColorPlatform*> ColorsToPickFrom;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UPlatformColor>> ColorsToPickFrom;
+
+	FTimerHandle TurnColorHandle;
 public:
 	ALD49Character();
 
@@ -62,14 +65,14 @@ protected:
 
 	void TurnColor();
 
-	UColorPlatform* PickColor();
+	UPlatformColor* PickColor();
 
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
-
+	virtual void BeginPlay() override;
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
