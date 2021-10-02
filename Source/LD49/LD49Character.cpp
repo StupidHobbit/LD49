@@ -167,11 +167,12 @@ void ALD49Character::Tick(float DeltaTime)
 	TArray<AActor*> OverlappingActors;
 	this->GetOverlappingActors(OverlappingActors, nullptr);
 	for (auto actor : OverlappingActors) {
+		//UE_LOG(LogTemp, Warning, TEXT("%s\n"), *actor->GetName());
 		auto PlatformColor = Cast<UPlatformColor>(actor->GetComponentByClass(UPlatformColor::StaticClass()));
 		if (PlatformColor != nullptr) {
 			if (PlatformColor->Name != this->CurrrentColor->Name) {
 				this->CurrentHealth -= DeltaTime * this->DamageRate;
-				UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
+				//UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
 			}
 		}
 	}
