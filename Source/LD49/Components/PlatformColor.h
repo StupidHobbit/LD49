@@ -29,12 +29,11 @@ class LD49_API UPlatformColor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UPlatformColor();
+	void Update();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	void Update();
 
 	virtual void OnRegister();
 

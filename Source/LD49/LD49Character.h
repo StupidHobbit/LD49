@@ -8,6 +8,7 @@
 
 
 class UPlatformColor;
+class USphereComponent;
 struct FTimerHandle;
 
 UCLASS(config = Game)
@@ -23,14 +24,20 @@ class ALD49Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* CollisionSphere;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
 	UPlatformColor* CurrrentColor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
-	UPlatformColor* NextColor;
+	TSubclassOf<UPlatformColor> NextColor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UPlatformColor>> ColorsToPickFrom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
+	float TimeToChangeColor;
 
 	FTimerHandle TurnColorHandle;
 public:
@@ -43,6 +50,14 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
+	float MaxHealth = 100;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+	float CurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
+	float DamageRate = 10;
+
 
 protected:
 	/** Called for forwards/backward input */
@@ -65,7 +80,7 @@ protected:
 
 	void TurnColor();
 
-	UPlatformColor* PickColor();
+	void UpdateNextColor();
 
 
 protected:
@@ -78,6 +93,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	virtual void Tick(float DeltaTime) override;
 };
 
 
