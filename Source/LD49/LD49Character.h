@@ -39,6 +39,7 @@ class ALD49Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
 	float TimeToChangeColor;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
 	FTimerHandle TurnColorHandle;
 public:
 	ALD49Character();
