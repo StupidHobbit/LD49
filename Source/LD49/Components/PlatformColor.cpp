@@ -42,13 +42,6 @@ void UPlatformColor::Update() {
 	}
 }
 
-void UPlatformColor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-	Update();
-}
-
-
 void UPlatformColor::OnRegister()
 {
 	Super::OnRegister();
