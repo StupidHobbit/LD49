@@ -29,12 +29,11 @@ class LD49_API UPlatformColor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UPlatformColor();
+	void Update();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	void Update();
 
 	virtual void OnRegister();
 
@@ -45,9 +44,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Color)
 	UMaterialInstance *Material;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Color)
+	UMaterialInstance* UIMaterial;
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 };

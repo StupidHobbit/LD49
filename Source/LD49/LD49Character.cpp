@@ -3,7 +3,8 @@
 #include "LD49Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
+#include "LD49/Components/PlatformColor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -13,6 +14,7 @@
 // AMyProject2Character
 ALD49Character::ALD49Character()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -31,6 +33,9 @@ ALD49Character::ALD49Character()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	CollisionSphere->SetupAttachment(RootComponent);
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -42,8 +47,7 @@ ALD49Character::ALD49Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	this->CurrentHealth = this->MaxHealth;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,15 +114,66 @@ void ALD49Character::MoveRight(float Value)
 	}
 }
 
-void ALD49Character::TurnColor()
+void ALD49Character::BeginPlay()
 {
-	if (this->NextColor == nullptr) {
-		this->CurrrentColor = this->PickColor();
-	}
-	this->NextColor = this->PickColor();
+	Super::BeginPlay();
+
+	this->CurrentHealth = this->MaxHealth;
+
+	this->TurnColor();
 }
 
-UColorPlatform* ALD49Character::PickColor()
+
+void ALD49Character::TurnColor()
 {
-	return this->ColorsToPickFrom[FMath::RandRange(0, this->ColorsToPickFrom.Num() - 1)];
+	if (this->ColorsToPickFrom.Num() == 0) {
+		return;
+	}
+
+	if (this->CurrrentColor != nullptr) {
+		this->CurrrentColor->UnregisterComponent();
+	}
+
+	if (this->NextColor == nullptr) {
+		UpdateNextColor();
+	}
+	this->CurrrentColor = NewObject<UPlatformColor>(this, this->NextColor, NAME_None, RF_Transient);
+	this->CurrrentColor->RegisterComponent();
+
+	UpdateNextColor();
+	GetWorld()->GetTimerManager().SetTimer(
+		this->TurnColorHandle,
+		this, 
+		&ALD49Character::TurnColor, 
+		this->TimeToChangeColor, 
+		false
+	);
+}
+
+void ALD49Character::UpdateNextColor()
+{
+	auto i = FMath::RandRange(0, this->ColorsToPickFrom.Num() - 1);
+	if (this->ColorsToPickFrom[i] == this->NextColor) {
+		i = (i + 1) % this->ColorsToPickFrom.Num();
+	}
+	this->NextColor = this->ColorsToPickFrom[i];
+}
+
+// Called every frame
+void ALD49Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	TArray<AActor*> OverlappingActors;
+	this->GetOverlappingActors(OverlappingActors, nullptr);
+	for (auto actor : OverlappingActors) {
+		//UE_LOG(LogTemp, Warning, TEXT("%s\n"), *actor->GetName());
+		auto PlatformColor = Cast<UPlatformColor>(actor->GetComponentByClass(UPlatformColor::StaticClass()));
+		if (PlatformColor != nullptr) {
+			if (PlatformColor->Name != this->CurrrentColor->Name) {
+				this->CurrentHealth -= DeltaTime * this->DamageRate;
+				//UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
+			}
+		}
+	}
 }
