@@ -178,6 +178,9 @@ void ALD49Character::Tick(float DeltaTime)
 			if (PlatformColor->Name != this->CurrrentColor->Name) {
 				this->CurrentHealth -= DeltaTime * PlatformColor->DamagePerSecond;
 				IsDecaying = true;
+				if (this->CurrentHealth <= 0 && !this->IsDead) {
+					AtDeath();
+				}
 				//UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
 			}
 		}
@@ -189,6 +192,8 @@ void ALD49Character::Tick(float DeltaTime)
 			AtCheckpoint();
 		}
 	}
+
+	this->IsDead = this->CurrentHealth <= 0;
 }
 
 void ALD49Character::RestoreAtCheckpoint() {

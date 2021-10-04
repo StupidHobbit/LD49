@@ -60,11 +60,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	float CurrentHealth;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
+	bool IsDead = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Win)
+	bool HasWon = false;
+
 	UFUNCTION(BlueprintCallable)
 	void RestoreAtCheckpoint();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void AtCheckpoint();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AtDeath();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
 	bool IsDecaying;

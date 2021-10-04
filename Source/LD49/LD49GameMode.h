@@ -32,6 +32,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void GameOver();
+
 };
 
 
