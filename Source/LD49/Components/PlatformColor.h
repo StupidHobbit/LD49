@@ -46,7 +46,7 @@ public:
 	UMaterialInstance *Material;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Color)
-	UMaterialInstance* UIMaterial;
+	UMaterialInstance* MaterialForUI;
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
