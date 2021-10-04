@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LD49Character.h"
+#include "CheckPoint.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -48,6 +49,10 @@ ALD49Character::ALD49Character()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	this->CurrentHealth = this->MaxHealth;
+
+	if (this->VisitedCheckPoints.Num() == 0) {
+		this->VisitedCheckPoints.Push(this->GetActorLocation());
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,6 +169,8 @@ void ALD49Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	IsDecaying = false;
+
 	TArray<AActor*> OverlappingActors;
 	this->GetOverlappingActors(OverlappingActors, nullptr);
 	for (auto actor : OverlappingActors) {
@@ -172,8 +179,24 @@ void ALD49Character::Tick(float DeltaTime)
 		if (PlatformColor != nullptr) {
 			if (PlatformColor->Name != this->CurrrentColor->Name) {
 				this->CurrentHealth -= DeltaTime * this->DamageRate;
+				IsDecaying = true;
 				//UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
 			}
 		}
+
+		auto checkpoint = Cast<ACheckPoint>(actor);
+		if (checkpoint != nullptr) {
+			this->VisitedCheckPoints.Push(checkpoint->GetTransform().GetLocation());
+			checkpoint->Destroy();
+			AtCheckpoint();
+		}
+	}
+}
+
+void ALD49Character::RestoreAtCheckpoint() {
+	CurrentHealth = MaxHealth;
+
+	if (this->VisitedCheckPoints.Num() != 0) {
+		this->SetActorLocation(this->VisitedCheckPoints.Last());
 	}
 }

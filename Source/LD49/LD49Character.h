@@ -41,6 +41,9 @@ class ALD49Character : public ACharacter
 
 	UPROPERTY(BlueprintReadOnly, Category = "Colors", meta = (AllowPrivateAccess = "true"))
 	FTimerHandle TurnColorHandle;
+
+	UPROPERTY(BlueprintReadOnly, Category = "CheckPoints", meta = (AllowPrivateAccess = "true"))
+	TArray<FVector> VisitedCheckPoints;
 public:
 	ALD49Character();
 
@@ -54,11 +57,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
 	float MaxHealth = 100;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	float CurrentHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
 	float DamageRate = 10;
 
+	UFUNCTION(BlueprintCallable)
+	void RestoreAtCheckpoint();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void AtCheckpoint();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+	bool IsDecaying;
 
 protected:
 	/** Called for forwards/backward input */
