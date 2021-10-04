@@ -47,6 +47,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Color)
 	UMaterialInstance* MaterialForUI;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Damage)
+	float DamagePerSecond = 10;
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

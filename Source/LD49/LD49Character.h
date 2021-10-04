@@ -59,8 +59,6 @@ public:
 	float MaxHealth = 100;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Health)
 	float CurrentHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
-	float DamageRate = 10;
 
 	UFUNCTION(BlueprintCallable)
 	void RestoreAtCheckpoint();

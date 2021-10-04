@@ -47,12 +47,6 @@ ALD49Character::ALD49Character()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	this->CurrentHealth = this->MaxHealth;
-
-	if (this->VisitedCheckPoints.Num() == 0) {
-		this->VisitedCheckPoints.Push(this->GetActorLocation());
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -126,6 +120,10 @@ void ALD49Character::BeginPlay()
 	this->CurrentHealth = this->MaxHealth;
 
 	this->TurnColor();
+
+	if (this->VisitedCheckPoints.Num() == 0) {
+		this->VisitedCheckPoints.Push(this->GetActorLocation());
+	}
 }
 
 
@@ -178,7 +176,7 @@ void ALD49Character::Tick(float DeltaTime)
 		auto PlatformColor = Cast<UPlatformColor>(actor->GetComponentByClass(UPlatformColor::StaticClass()));
 		if (PlatformColor != nullptr) {
 			if (PlatformColor->Name != this->CurrrentColor->Name) {
-				this->CurrentHealth -= DeltaTime * this->DamageRate;
+				this->CurrentHealth -= DeltaTime * PlatformColor->DamagePerSecond;
 				IsDecaying = true;
 				//UE_LOG(LogTemp, Warning, TEXT("%f\n"), this->CurrentHealth);
 			}

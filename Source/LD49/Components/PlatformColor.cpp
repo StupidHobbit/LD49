@@ -37,7 +37,7 @@ void UPlatformColor::Update() {
 	if (owner == nullptr) return;
 
 	auto mesh = Cast<UMeshComponent>(owner->GetComponentByClass(UMeshComponent::StaticClass()));
-	if (mesh != nullptr) {
+	if (mesh != nullptr && Material != nullptr) {
 		mesh->SetMaterial(0, Material);
 	}
 }
